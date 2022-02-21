@@ -1,0 +1,42 @@
+[package]
+name = "e-df"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]] # Bin to run the HelloWorld gRPC server
+name = "nuclear-plant"
+path = "src/nuclear-plant.rs"
+
+[[bin]] # Bin to run the HelloWorld gRPC server
+name = "transfo-simple"
+path = "src/transfo-simple.rs"
+
+[dependencies]
+chrono = "0.4.0"
+clap = "2.18.0"
+env_logger = "0.9.0"
+log = "0.4.8"
+rand = "0.8.3"
+rdkafka = { version = "0.28", features = ["cmake-build","ssl"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+slab = "0.4"
+tokio = { version = "1.0", features = ["full"] }
+tokio-util = { version = "0.6.9", features = ["full"] }
+tokio-stream = { version = "0.1.8"}
+tokio-stream-ext = { version = "0.1.5", feature = ["time"]}
+futures = {version = "0.3.21"}
+#tracing = { version = "0.1.30", optional = true }
+
+metrics = { version = "^0.18" }
+metrics-util = { version = "^0.11", default-features = false, features = ["recency", "registry", "summary"] }
+metrics-exporter-prometheus = { version = "^0.8", required-features = ["http-listener"] }
+quanta = "0.9.3"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+
+#avro
+avro-rs = "0.13.0"
+schema_registry_converter = { version = "2.1.0", features = ["easy","avro"] }
+
