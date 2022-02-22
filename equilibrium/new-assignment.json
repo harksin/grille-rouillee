@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "partitions": [
+    {
+      "topic": "equilibrium",
+      "partition": 0,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 1,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 2,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 3,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 4,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 5,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 6,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 7,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 8,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 9,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 10,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 11,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 12,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 13,
+      "replicas": [
+        1,
+        1002
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    },
+    {
+      "topic": "equilibrium",
+      "partition": 14,
+      "replicas": [
+        1002,
+        1
+      ],
+      "log_dirs": [
+        "any",
+        "any"
+      ]
+    }
+  ]
+}
