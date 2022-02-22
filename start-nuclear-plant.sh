@@ -1,0 +1,1 @@
+cargo run --bin nuclear-plant -- --power-plant-name nuc-001 --prom-port 9002

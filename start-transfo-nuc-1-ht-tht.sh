@@ -1,0 +1,1 @@
+cargo run --bin  transfo-simple -- --output-power THT --input-topic nuc-001-ht --output-topic backbone-west-tht --prom-port 9005

@@ -1,4 +1,5 @@
 mod domain;
+mod utils;
 
 use std::net::SocketAddr;
 use std::time::Duration;
@@ -18,32 +19,26 @@ use chrono::prelude::*;
 
 use tokio_stream::{self as stream, StreamExt};
 
+use crate::domain::power_event::PowerEvent;
+use crate::utils::prom_utils::setup_prom_and_log;
 use schema_registry_converter::async_impl::easy_avro::EasyAvroEncoder;
 use schema_registry_converter::async_impl::schema_registry::SrSettings;
 use schema_registry_converter::schema_registry_common::SubjectNameStrategy;
-use crate::domain::power_event::PowerEvent;
 // use serde_json::Value::String;
 
 async fn produce(brokers: &str, power_plant_name: &str) {
-
     let topic_name = format!("{}-ht", power_plant_name);
     let sr_url = String::from("http://localhost:8081");
     let sr_settings = SrSettings::new(sr_url);
-    let publish_schema_resutl = PowerEvent::publish_schema(&sr_settings,format!("{}-value", topic_name)).await.expect("fail to publish schema");
-    info!(
-            "registered Schema :  {:?}",
-            publish_schema_resutl
-        );
+    let publish_schema_resutl =
+        PowerEvent::publish_schema(&sr_settings, format!("{}-value", topic_name))
+            .await
+            .expect("fail to publish schema");
+    info!("registered Schema :  {:?}", publish_schema_resutl);
     let encoder = EasyAvroEncoder::new(sr_settings);
 
-
-    let primitive_schema_strategy = SubjectNameStrategy::TopicNameStrategy(
-        topic_name.clone(),
-        false,
-    );
-
-
-
+    let primitive_schema_strategy =
+        SubjectNameStrategy::TopicNameStrategy(topic_name.clone(), false);
 
     let producer: &FutureProducer = &ClientConfig::new()
         .set("bootstrap.servers", brokers)
@@ -51,22 +46,16 @@ async fn produce(brokers: &str, power_plant_name: &str) {
         .create()
         .expect("Producer creation error");
 
-    let item_stream = futures::stream::repeat("tick").throttle(Duration::from_millis(100));
+    let item_stream = futures::stream::repeat("tick").throttle(Duration::from_millis(1000));
     tokio::pin!(item_stream);
 
     loop {
         let _ = item_stream.next().await;
-        // let message = json!({
-        //     "origin": power_plant_name,
-        //     "volume": "100Mw",
-        //     "ts": &format!("{:?}",Utc::now()),
-        //     "power_type": "HT"
-        // });
 
-        let power_event = PowerEvent{
+        let power_event = PowerEvent {
             origin: String::from(power_plant_name),
             volume: String::from("100"),
-            ts: format!("{:?}",Utc::now()),
+            ts: format!("{:?}", Utc::now()),
             power_type: String::from("HT"),
         };
 
@@ -74,7 +63,6 @@ async fn produce(brokers: &str, power_plant_name: &str) {
             .encode_struct(power_event, &primitive_schema_strategy)
             .await
             .expect("can't encode message");
-
 
         let delivery_status = producer
             .send(
@@ -121,30 +109,25 @@ async fn main() {
                 .required(true)
                 .default_value("nuc-001"),
         )
-        .get_matches();
-
-    tracing_subscriber::fmt::init();
-
-    let prom_reporter = PrometheusBuilder::new();
-
-    let prom_listener: SocketAddr = "0.0.0.0:9002"
-        .parse()
-        .expect("not well formated prometheus endpoint");
-
-    prom_reporter
-        .idle_timeout(
-            MetricKindMask::COUNTER | MetricKindMask::HISTOGRAM,
-            Some(Duration::from_secs(10)),
+        .arg(
+            Arg::with_name("prom-port")
+                .short("m")
+                .long("prom-port")
+                .help("promeheus port")
+                .takes_value(true)
+                .required(true)
+                .default_value("9000"),
         )
-        .with_http_listener(prom_listener)
-        .install()
-        .expect("failed to install Prometheus recorder");
-
-    let (version_n, version_s) = get_rdkafka_version();
-    info!("rd_kafka_version: 0x{:08x}, {}", version_n, version_s);
+        .get_matches();
 
     let name = matches.value_of("power-plant-name").unwrap();
     let brokers = matches.value_of("brokers").unwrap();
+    let prom_port = matches.value_of("prom-port").unwrap();
+
+    setup_prom_and_log(prom_port);
+
+    let (version_n, version_s) = get_rdkafka_version();
+    info!("rd_kafka_version: 0x{:08x}, {}", version_n, version_s);
 
     produce(brokers, name).await;
 }
