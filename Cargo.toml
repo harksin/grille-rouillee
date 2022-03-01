@@ -8,6 +8,10 @@ name = "nuclear-plant"
 path = "src/nuclear-plant.rs"
 
 [[bin]] # Bin to run the HelloWorld gRPC server
+name = "nuclear-plant-json"
+path = "src/nuclear-plant-json.rs"
+
+[[bin]] # Bin to run the HelloWorld gRPC server
 name = "transfo-simple"
 path = "src/transfo-simple.rs"
 

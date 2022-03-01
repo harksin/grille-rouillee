@@ -3,7 +3,7 @@
 # create a topic :
 
 ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic equilibrium --partitions 15
---replication-factor 2
+--replication-factor 1
 
 # extract actual partition table
 

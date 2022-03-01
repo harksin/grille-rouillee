@@ -29,16 +29,7 @@ use schema_registry_converter::schema_registry_common::SubjectNameStrategy;
 async fn produce(brokers: &str, power_plant_name: &str) {
     let topic_name = format!("{}-ht", power_plant_name);
     let sr_url = String::from("http://localhost:8181");
-    let sr_settings = SrSettings::new(sr_url);
-    let publish_schema_resutl =
-        PowerEvent::publish_schema(&sr_settings, format!("{}-value", topic_name))
-            .await
-            .expect("fail to publish schema");
-    info!("registered Schema :  {:?}", publish_schema_resutl);
-    let encoder = EasyAvroEncoder::new(sr_settings);
 
-    let primitive_schema_strategy =
-        SubjectNameStrategy::TopicNameStrategy(topic_name.clone(), false);
 
     let producer: &FutureProducer = &ClientConfig::new()
         .set("bootstrap.servers", brokers)
@@ -59,10 +50,7 @@ async fn produce(brokers: &str, power_plant_name: &str) {
             power_type: String::from("HT"),
         };
 
-        let bytes = encoder
-            .encode_struct(power_event, &primitive_schema_strategy)
-            .await
-            .expect("can't encode message");
+        let bytes = serde_json::to_string(&power_event).unwrap();
 
         let delivery_status = producer
             .send(
