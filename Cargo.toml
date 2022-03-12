@@ -15,6 +15,10 @@ path = "src/nuclear-plant-json.rs"
 name = "transfo-simple"
 path = "src/transfo-simple.rs"
 
+[[bin]] # Bin to run the HelloWorld gRPC server
+name = "city-simple"
+path = "src/city-simple.rs"
+
 [dependencies]
 chrono = "0.4.0"
 clap = "2.18.0"

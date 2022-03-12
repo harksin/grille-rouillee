@@ -30,7 +30,6 @@ async fn produce(brokers: &str, power_plant_name: &str) {
     let topic_name = format!("{}-ht", power_plant_name);
     let sr_url = String::from("http://localhost:8181");
 
-
     let producer: &FutureProducer = &ClientConfig::new()
         .set("bootstrap.servers", brokers)
         .set("message.timeout.ms", "5000")
