@@ -5,7 +5,7 @@ use schema_registry_converter::schema_registry_common::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct PowerEvent {
     pub origin: String,
     pub volume: String,

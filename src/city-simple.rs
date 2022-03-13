@@ -16,7 +16,6 @@ use rdkafka::Message;
 
 use avro_rs::from_value;
 use futures::stream::FuturesUnordered;
-use futures::{StreamExt, TryStreamExt};
 use rand::Rng;
 use schema_registry_converter::async_impl::avro::AvroDecoder;
 use schema_registry_converter::async_impl::easy_avro::EasyAvroEncoder;
@@ -27,6 +26,7 @@ use crate::domain::power_event::PowerEvent;
 use crate::domain::power_request::PowerRequest;
 use crate::utils::prom_utils::setup_prom_and_log;
 
+use crate::utils::sr_utils::get_sr_settings;
 use tokio_stream::{self as stream, StreamExt};
 
 async fn alter_current_type<'a>(
@@ -64,8 +64,7 @@ async fn alter_current_type<'a>(
 async fn consume(brokers: &str, input_topic: &str, city_name: &str) {
     let topic = String::from("power-request");
 
-    let sr_url = String::from("http://localhost:8081");
-    let sr_settings = SrSettings::new(sr_url);
+    let sr_settings = get_sr_settings();
 
     let publish_schema_resutl =
         PowerRequest::publish_schema(&sr_settings, format!("{}-value", topic.clone()))

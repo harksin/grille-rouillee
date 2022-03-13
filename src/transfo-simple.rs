@@ -32,6 +32,7 @@ use schema_registry_converter::schema_registry_common::SubjectNameStrategy;
 // use avro_rs::{Codec, Reader, Schema, Writer, from_value, types::Record, Error};
 use crate::domain::power_event::PowerEvent;
 use crate::utils::prom_utils::setup_prom_and_log;
+use crate::utils::sr_utils::get_sr_settings;
 
 async fn alter_current_type<'a>(
     msg: OwnedMessage,
@@ -39,11 +40,7 @@ async fn alter_current_type<'a>(
     output_power: String,
     primitive_schema_strategy: SubjectNameStrategy,
 ) -> Vec<u8> {
-    info!("Starting expensive computation on message {}", msg.offset());
-    info!(
-        "Expensive computation completed on message {}",
-        msg.offset()
-    );
+    info!("converting {}", msg.offset());
 
     // let mut pw: PowerEvent = serde_json::from_slice(msg.payload().unwrap()).unwrap();
     let mut decoder = AvroDecoder::new(sr_settings.clone());
@@ -66,8 +63,8 @@ async fn alter_current_type<'a>(
 }
 
 async fn transform(brokers: &str, input_topic: &str, output_topic: &str, output_power: &str) {
-    let sr_url = String::from("http://localhost:8081");
-    let sr_settings = SrSettings::new(sr_url);
+    let sr_settings = get_sr_settings();
+
     let publish_schema_resutl =
         PowerEvent::publish_schema(&sr_settings, format!("{}-value", output_topic))
             .await
@@ -160,8 +157,7 @@ async fn main() {
                 .long("output-power")
                 .help("output power [BT/HT/THT]")
                 .takes_value(true)
-                .required(true)
-                .default_value("N/A"),
+                .required(true),
         )
         .arg(
             Arg::with_name("prom-port")
