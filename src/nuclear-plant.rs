@@ -178,7 +178,7 @@ async fn main() {
                 .help("promeheus port")
                 .takes_value(true)
                 .required(true)
-                .default_value("9000"),
+                .default_value("9900"),
         )
         .get_matches();
 
