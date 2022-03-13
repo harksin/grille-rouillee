@@ -19,6 +19,14 @@ path = "src/transfo-simple.rs"
 name = "city-simple"
 path = "src/city-simple.rs"
 
+[[bin]] # Bin to run the HelloWorld gRPC server
+name = "equilibrium"
+path = "src/equilibrium.rs"
+
+[[bin]] # Bin to run the HelloWorld gRPC server
+name = "create-topics"
+path = "src/create-topics.rs"
+
 [dependencies]
 anyhow = "1.0.56"
 chrono = "0.4.0"
