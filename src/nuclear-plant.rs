@@ -92,11 +92,11 @@ async fn producer_loop(
     info!("output : {}", topic_name);
 
     let sr_settings = get_sr_settings();
-    let publish_schema_resutlt =
+    let publish_schema_result =
         PowerEvent::publish_schema(&sr_settings, format!("{}-value", topic_name))
             .await
             .expect("fail to publish schema");
-    info!("registered Schema :  {:?}", publish_schema_resutlt);
+    info!("registered Schema :  {:?}", publish_schema_result);
     let encoder = EasyAvroEncoder::new(sr_settings.clone());
 
     let primitive_schema_strategy =
@@ -108,7 +108,7 @@ async fn producer_loop(
         .create()
         .expect("Producer creation error");
 
-    let mut interval_timer = tokio::time::interval(chrono::Duration::seconds(2).to_std().unwrap());
+    let mut interval_timer = tokio::time::interval(chrono::Duration::seconds(1).to_std().unwrap());
     loop {
         // Wait for the next interval tick
         interval_timer.tick().await;
@@ -149,22 +149,21 @@ async fn main() {
         .version(option_env!("CARGO_PKG_VERSION").unwrap_or(""))
         .about("Simple command line producer")
         .arg(
-            Arg::with_name("brokers")
-                .short("b")
+            Arg::new("brokers")
                 .long("brokers")
                 .help("Broker list in kafka format")
                 .takes_value(true)
                 .default_value("localhost:9092"),
         )
         .arg(
-            Arg::with_name("log-conf")
+            Arg::new("log-conf")
                 .long("log-conf")
                 .help("Configure the logging format (example: 'rdkafka=trace')")
                 .takes_value(true),
         )
         .arg(
-            Arg::with_name("power-plant-name")
-                .short("n")
+            Arg::new("power-plant-name")
+                .short('n')
                 .long("power-plant-name")
                 .help("just a name to identify the power plan")
                 .takes_value(true)
@@ -172,8 +171,8 @@ async fn main() {
                 .default_value("nuc-001"),
         )
         .arg(
-            Arg::with_name("prom-port")
-                .short("m")
+            Arg::new("prom-port")
+                .short('m')
                 .long("prom-port")
                 .help("promeheus port")
                 .takes_value(true)
@@ -193,7 +192,7 @@ async fn main() {
     let (version_n, version_s) = get_rdkafka_version();
     info!("rd_kafka_version: 0x{:08x}, {}", version_n, version_s);
 
-    let current_production: Arc<AtomicUsize> = Arc::new(AtomicUsize::new(1));
+    let current_production: Arc<AtomicUsize> = Arc::new(AtomicUsize::new(100));
 
     let p_loop = producer_loop(brokers, name, current_production.clone());
     let c_loop = command_listener(brokers, name, current_production.clone());

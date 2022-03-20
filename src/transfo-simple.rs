@@ -136,32 +136,32 @@ async fn main() {
         .version(option_env!("CARGO_PKG_VERSION").unwrap_or(""))
         .about("Simple command line producer")
         .arg(
-            Arg::with_name("input-topic")
-                .short("i")
+            Arg::new("input-topic")
+                .short('i')
                 .long("input-topic")
                 .help("input line to transformer")
                 .takes_value(true)
                 .required(true),
         )
         .arg(
-            Arg::with_name("output-topic")
-                .short("o")
+            Arg::new("output-topic")
+                .short('o')
                 .long("output-topic")
                 .help("output line from transformer")
                 .takes_value(true)
                 .required(true),
         )
         .arg(
-            Arg::with_name("output-power")
-                .short("p")
+            Arg::new("output-power")
+                .short('p')
                 .long("output-power")
                 .help("output power [BT/HT/THT]")
                 .takes_value(true)
                 .required(true),
         )
         .arg(
-            Arg::with_name("prom-port")
-                .short("m")
+            Arg::new("prom-port")
+                .short('m')
                 .long("prom-port")
                 .help("promeheus port")
                 .takes_value(true)

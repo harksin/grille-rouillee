@@ -74,22 +74,21 @@ async fn main() {
         .version(option_env!("CARGO_PKG_VERSION").unwrap_or(""))
         .about("Simple command line producer")
         .arg(
-            Arg::with_name("brokers")
-                .short("b")
+            Arg::new("brokers")
                 .long("brokers")
                 .help("Broker list in kafka format")
                 .takes_value(true)
                 .default_value("localhost:9092"),
         )
         .arg(
-            Arg::with_name("log-conf")
+            Arg::new("log-conf")
                 .long("log-conf")
                 .help("Configure the logging format (example: 'rdkafka=trace')")
                 .takes_value(true),
         )
         .arg(
-            Arg::with_name("power-plant-name")
-                .short("n")
+            Arg::new("power-plant-name")
+                .short('n')
                 .long("power-plant-name")
                 .help("just a name to identify the power plan")
                 .takes_value(true)
@@ -97,8 +96,8 @@ async fn main() {
                 .default_value("nuc-001"),
         )
         .arg(
-            Arg::with_name("prom-port")
-                .short("m")
+            Arg::new("prom-port")
+                .short('m')
                 .long("prom-port")
                 .help("promeheus port")
                 .takes_value(true)

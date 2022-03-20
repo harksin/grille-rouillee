@@ -138,23 +138,23 @@ async fn main() {
         .version(option_env!("CARGO_PKG_VERSION").unwrap_or(""))
         .about("Simple command line producer")
         .arg(
-            Arg::with_name("input-topic")
-                .short("i")
+            Arg::new("input-topic")
+                .short('i')
                 .long("input-topic")
                 .help("input line to transformer")
                 .takes_value(true)
                 .required(true),
         )
         .arg(
-            Arg::with_name("city-name")
-                .short("n")
+            Arg::new("city-name")
+                .short('n')
                 .long("city-name")
                 .takes_value(true)
                 .required(true),
         )
         .arg(
-            Arg::with_name("prom-port")
-                .short("m")
+            Arg::new("prom-port")
+                .short('m')
                 .long("prom-port")
                 .help("promeheus port")
                 .takes_value(true)
