@@ -1,135 +1,104 @@
 mod utils;
 
-use std::time::Duration;
+use clap::Parser;
 
-use clap::{value_t, App, Arg};
-use log::trace;
+#[derive(Parser)]
+#[clap(name = "equilibrium")]
+#[clap(bin_name = "equilibrium")]
+struct Equilibrium {
+    #[clap(subcommand)]
+    command: Commands,
+}
 
-use rdkafka::config::ClientConfig;
-use rdkafka::consumer::{BaseConsumer, Consumer};
+#[derive(clap::ArgEnum, Clone, Debug)]
+pub enum Mode {
+    Spread,
+    Size,
+}
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+enum Commands {
+    #[clap(arg_required_else_help = true)]
+    Balance {
+        /// kafka broker
+        #[clap(short, long, required = true)]
+        bootstrap_server: String,
 
-use crate::utils::prom_utils::setup_prom_and_log;
+        /// is balance incremental ?
+        #[clap(arg_enum, short, long, required = true)]
+        mode: Mode,
 
-fn print_metadata(brokers: &str, topic: Option<&str>, timeout: Duration, fetch_offsets: bool) {
-    let consumer: BaseConsumer = ClientConfig::new()
-        .set("bootstrap.servers", brokers)
-        .create()
-        .expect("Consumer creation failed");
+        /// is balance incremental ?
+        #[clap(short, long,takes_value = false)]
+        incremental: bool,
 
-    trace!("Consumer created");
+        /// dry run with consequence, ask to continue
+        #[clap(short,long,takes_value = false)]
+        plan: bool,
+    },
+    #[clap(arg_required_else_help = true)]
+    Supervise {
+        /// kafka broker
+        #[clap(short, long, required = true)]
+        bootstrap_server: String,
 
-    let metadata = consumer
-        .fetch_metadata(topic, timeout)
-        .expect("Failed to fetch metadata");
+        /// is supervisor move incremental ?
+        #[clap(short, long,takes_value = false)]
+        incremental: bool,
+    },
+    #[clap(arg_required_else_help = true)]
+    DecommissionBroker {
+        /// kafka broker
+        #[clap(short, long, required = true)]
+        bootstrap_server: String,
 
-    let mut message_count = 0;
+        /// is supervisor move incremental ?
+        #[clap(short, long, takes_value = false)]
+        incremental: bool,
 
-    println!("Cluster information:");
-    println!("  Broker count: {}", metadata.brokers().len());
-    println!("  Topics count: {}", metadata.topics().len());
-    println!("  Metadata broker name: {}", metadata.orig_broker_name());
-    println!("  Metadata broker id: {}\n", metadata.orig_broker_id());
-
-    println!("Brokers:");
-    for broker in metadata.brokers() {
-        println!(
-            "  Id: {}  Host: {}:{}  ",
-            broker.id(),
-            broker.host(),
-            broker.port()
-        );
-    }
-
-    println!("\nTopics:");
-    for topic in metadata.topics() {
-        println!("  Topic: {}  Err: {:?}", topic.name(), topic.error());
-        for partition in topic.partitions() {
-            println!(
-                "     Partition: {}  Leader: {}  Replicas: {:?}  ISR: {:?}  Err: {:?}",
-                partition.id(),
-                partition.leader(),
-                partition.replicas(),
-                partition.isr(),
-                partition.error()
-            );
-            if fetch_offsets {
-                let (low, high) = consumer
-                    .fetch_watermarks(topic.name(), partition.id(), Duration::from_secs(1))
-                    .unwrap_or((-1, -1));
-                println!(
-                    "       Low watermark: {}  High watermark: {} (difference: {})",
-                    low,
-                    high,
-                    high - low
-                );
-                message_count += high - low;
-            }
-        }
-        if fetch_offsets {
-            println!("     Total message count: {}", message_count);
-        }
-    }
+        /// dry run with consequence, ask to continue
+        #[clap(short,long,takes_value = false)]
+        plan: bool,
+    },
 }
 
 fn main() {
-    let matches = App::new("metadata fetch example")
-        .version(option_env!("CARGO_PKG_VERSION").unwrap_or(""))
-        .about("Fetch and print the cluster metadata")
-        .arg(
-            Arg::new("bootstrap-server")
-                .short('b')
-                .long("bootstrap-server")
-                .help("Broker list in kafka format")
-                .takes_value(true)
-                .default_value("localhost:9092"),
-        )
-        .arg(
-            Arg::new("incremental")
-                .long("offsets")
-                .help("Enables offset fetching"),
-        )
-        .arg(
-            Arg::new("topic")
-                .long("topic")
-                .help("Only fetch the metadata of the specified topic")
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new("log-conf")
-                .long("log-conf")
-                .help("Configure the logging format (example: 'rdkafka=trace')")
-                .takes_value(true),
-        )
-        .arg(
-            Arg::new("timeout")
-                .long("timeout")
-                .help("Metadata fetch timeout in milliseconds")
-                .takes_value(true)
-                .default_value("60000"),
-        )
-        .arg(
-            Arg::new("prom-port")
-                .short('m')
-                .long("prom-port")
-                .help("promeheus port")
-                .takes_value(true)
-                .required(true)
-                .default_value("9910"),
-        )
-        .get_matches();
+    let args = Equilibrium::parse();
 
-    let brokers = matches.value_of("brokers").unwrap();
-    let timeout = value_t!(matches, "timeout", u64).unwrap();
-    let topic = matches.value_of("topic");
-    let fetch_offsets = matches.is_present("offsets");
-    let prom_port = matches.value_of("prom-port").unwrap();
+    match &args.command {
+        Commands::Balance {
+            bootstrap_server,
+            mode,
+            incremental,
+            plan,
+        } => {
+            println!("Balance Started\n bootstrap-server [{}]\n mode : [{:?}]\n incremental : [{}]\n plan : [{}]", bootstrap_server,mode,incremental,plan);
 
-    setup_prom_and_log(prom_port);
+            //todo
+        }
+        Commands::Supervise {
+            bootstrap_server,
+            incremental,
+        } => {
+            println!(
+                "Supervision Started\n bootstrap-server [{}]\n incremental : [{}]",
+                bootstrap_server, incremental
+            );
 
-    print_metadata(
-        brokers,
-        topic,
-        Duration::from_millis(timeout),
-        fetch_offsets,
-    );
+            //todo
+        }
+        Commands::DecommissionBroker {
+            bootstrap_server,
+            incremental,
+            plan,
+        } => {
+            println!(
+                "Decommission Started\n bootstrap-server [{}]\n incremental : [{}]\n plan : [{}]",
+                bootstrap_server, incremental, plan
+            );
+
+            //todo
+        }
+    }
 }

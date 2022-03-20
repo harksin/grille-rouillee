@@ -24,13 +24,17 @@ name = "equilibrium"
 path = "src/equilibrium.rs"
 
 [[bin]] # Bin to run the HelloWorld gRPC server
+name = "kafka-metadata-example"
+path = "src/kafka-metadata-example.rs"
+
+[[bin]] # Bin to run the HelloWorld gRPC server
 name = "create-topics"
 path = "src/create-topics.rs"
 
 [dependencies]
 anyhow = "1.0.56"
 chrono = "0.4.0"
-clap = "3.1.6"
+clap = { version = "3.1.6", features = ["derive"] }
 env_logger = "0.9.0"
 log = "0.4.8"
 rand = "0.8.3"
